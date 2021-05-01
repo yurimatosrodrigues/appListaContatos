@@ -15,21 +15,9 @@ class _HomePageState extends State<HomePage> {
   List<Contato> contatos = [];
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
-
-   /*Contato c = new Contato();
-    c.nome = "Vida";
-    c.email = 'lorenmatos34@gmail.com';
-    c.telefone = '958603139';
-    helper.salvarContato(c);*/
-
-
-    helper.getContatos().then((value) {
-      setState(() {
-        contatos = value;
-      });
-    });
+    getTodosContatos();
   }
 
   @override
@@ -81,7 +69,9 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(contatos[index].nome,
+                        Text(
+                          contatos[index].nome != null ?
+                            contatos[index].nome : "",
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -89,14 +79,18 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
 
-                        Text(contatos[index].email,
+                        Text(
+                          contatos[index].email != null ?
+                            contatos[index].email : "",
                           style: TextStyle(
                               fontSize: 17,
 
                           ),
                         ),
 
-                        Text(contatos[index].telefone,
+                        Text(
+                          contatos[index].telefone != null ?
+                            contatos[index].telefone : "",
                           style: TextStyle(
                               fontSize: 17,
 
@@ -114,9 +108,24 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showContatoPage({Contato contato}){
-    Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ContatoPage(contato: contato,)));
+  void _showContatoPage({Contato contato}) async{
+    final _recContato = await Navigator.push(context,
+       MaterialPageRoute(builder: (context) => ContatoPage(contato: contato,)));
+    if (_recContato != null){
+      if(contato != null){
+        helper.updateContato(_recContato);
+      }
+      else{
+        helper.salvarContato(_recContato);
+      }
+    }
+  }
+
+  void getTodosContatos(){
+    helper.getContatos().then((value) {
+      setState(() {
+        contatos = value;
+      });
+    });
   }
 }
